@@ -14,7 +14,7 @@ public class GreetServiceImpl extends GreetServiceGrpc.GreetServiceImplBase {
         Greeting greeting = request.getGreeting();
         String first_name=greeting.getFirstName();
 
-        String result = "Hellow" + first_name;
+        String result = "Hellow " + first_name;
         GreetResponse response = GreetResponse.newBuilder()
                 .setResult(result)
                 .build();

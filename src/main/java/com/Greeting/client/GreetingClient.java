@@ -18,8 +18,9 @@ public class GreetingClient {
 
         GreetServiceGrpc.GreetServiceBlockingStub greetClient=GreetServiceGrpc.newBlockingStub(channel);
 
+        //Unary
         Greeting greeting= Greeting.newBuilder()
-                .setFirstName("SIddhant")
+                .setFirstName("Siddhant")
                 .setLastName("Nagelia")
                 .build();
         GreetRequest greetRequest = GreetRequest.newBuilder()

@@ -18,17 +18,23 @@ public class GreetingClient {
 
         GreetServiceGrpc.GreetServiceBlockingStub greetClient=GreetServiceGrpc.newBlockingStub(channel);
 
-        Greeting greeting= Greeting.newBuilder()
-                .setFirstName("SIddhant")
-                .setLastName("Nagelia")
-                .build();
-        GreetRequest greetRequest = GreetRequest.newBuilder()
-                .setGreeting(greeting)
-                .build();
+        //Unary
+//        Greeting greeting= Greeting.newBuilder()
+//                .setFirstName("Siddhant")
+//                .setLastName("Nagelia")
+//                .build();
+//        GreetRequest greetRequest = GreetRequest.newBuilder()
+//                .setGreeting(greeting)
+//                .build();
+//        GreetResponse response = greetClient.greet(greetRequest);
+//        System.out.println(response.getResult());
 
+        // Stream
+        GreetManyTimesRequest greetManyTimesRequest= GreetManyTimesRequest.newBuilder()
+                .setGreeting(Greeting.newBuilder().setFirstName("Siddhant")).build();
 
-        GreetResponse response = greetClient.greet(greetRequest);
-        System.out.println(response.getResult());
+        greetClient.greetManyTimes(greetManyTimesRequest).forEachRemaining(greetManyTimesResponse -> System.out.println(greetManyTimesResponse.getResult()));
+
         System.out.println("Shutting Down channel");
         channel.shutdown();
 

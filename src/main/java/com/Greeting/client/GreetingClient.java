@@ -2,8 +2,12 @@ package com.Greeting.client;
 
 import io.grpc.ManagedChannel;
 import io.grpc.ManagedChannelBuilder;
+import io.grpc.stub.StreamObserver;
 import org.proto.dummy.DummyServiceGrpc;
 import org.proto.greet.*;
+
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.TimeUnit;
 
 public class GreetingClient {
 
@@ -24,9 +28,9 @@ public class GreetingClient {
                 .usePlaintext()
                 .build();
 
-        doUnaryCall(channel);
-        doServerStreamingCall(channel);
-
+       // doUnaryCall(channel);
+       // doServerStreamingCall(channel);
+        doClientStreamingCall(channel);
         System.out.println("Shutting Down channel");
         channel.shutdown();
     }
@@ -56,5 +60,49 @@ public class GreetingClient {
         greetClient.greetManyTimes(greetManyTimesRequest).forEachRemaining(greetManyTimesResponse -> System.out.println(greetManyTimesResponse.getResult()));
 
     }
+    private void doClientStreamingCall(ManagedChannel channel){
 
+        // Create Async client
+        GreetServiceGrpc.GreetServiceStub asyncClient= GreetServiceGrpc.newStub(channel);
+        CountDownLatch latch =new CountDownLatch(1);
+        StreamObserver<LongGreetRequest> requestObserver =  asyncClient.longGreet(new StreamObserver<LongGreetResponse>() {
+            @Override
+            public void onNext(LongGreetResponse value) {
+                System.out.println("Received a response");
+                System.out.println(value.getResult());
+
+            }
+
+            @Override
+            public void onError(Throwable t) {
+
+            }
+
+            @Override
+            public void onCompleted() {
+                System.out.println("Server completed ");
+        latch.countDown();
+            }
+        });
+
+        requestObserver.onNext(LongGreetRequest.newBuilder()
+                .setGreeting(Greeting.newBuilder()
+                        .setFirstName("Siddhant").build())
+                .build());
+        requestObserver.onNext(LongGreetRequest.newBuilder()
+                .setGreeting(Greeting.newBuilder()
+                        .setFirstName("Nagelia").build())
+                .build());
+        requestObserver.onNext(LongGreetRequest.newBuilder()
+                .setGreeting(Greeting.newBuilder()
+                        .setFirstName("Sida").build())
+                .build());
+        requestObserver.onCompleted();
+        try {
+            latch.await(5, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+    }
 }

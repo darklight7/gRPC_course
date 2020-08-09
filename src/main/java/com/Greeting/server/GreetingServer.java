@@ -7,19 +7,22 @@ import java.io.IOException;
 
 public class GreetingServer {
     public static void main(String[] args) throws IOException, InterruptedException {
-        System.out.println("Hellow gRPC");
+        System.out.println("Hello gRPC");
 
+        // plaintext server
         Server server = ServerBuilder.forPort(50051)
                 .addService(new GreetServiceImpl())
                 .build();
+
         server.start();
 
-        Runtime.getRuntime().addShutdownHook(new Thread(()->{
-            System.out.println("Received ShutDown Request");
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            System.out.println("Received Shutdown Request");
             server.shutdown();
-            System.out.println("Successfully stopped the server ");
+            System.out.println("Successfully stopped the server");
         }));
-        server.awaitTermination();
 
+        server.awaitTermination();
     }
+
 }
